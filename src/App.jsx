@@ -1,14 +1,19 @@
-// import { useState } from 'react';
-// import { useEffect } from 'react';
+import { useEffect } from 'react';
 import ContactForm from './components/ContactForm/ContactForm';
 import SearchBox from './components/SearchBox/SearchBox';
 import ContactList from './components/ContactList/ContactList';
-import css from './App.module.css';
-import { useSelector } from 'react-redux';
-import { selectContacts } from './redux/contactsSlice';
+import ErrorMessage from './components/ErrorMessage/ErrorMessage';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchContacts } from './redux/contactsOps';
+import { selectError, selectIsLoading } from './redux/contactsSlice';
 
 export default function App() {
-    const contacts = useSelector(selectContacts);
+    const dispatch = useDispatch();
+    const isLoading = useSelector(selectIsLoading);
+    const error = useSelector(selectError);
+    useEffect(() => {
+        dispatch(fetchContacts());
+    }, [dispatch]);
 
     return (
         <div>
@@ -21,9 +26,12 @@ export default function App() {
                     <SearchBox />
                 </section>
                 <section>
-                    {contacts.length ? <ContactList /> : <p>No contacts yet</p>}
+                   <ContactList />
+            {isLoading && <b>Request in progress...</b>}
+             {error && <ErrorMessage />}
                 </section>
             </div>
-        </div>
+       </div>
     );
 }
+
